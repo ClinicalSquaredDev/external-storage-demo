@@ -1,0 +1,46 @@
+{
+  "name": "external-storage-demo-server",
+  "version": "1.0.0",
+  "main": "index.js",
+  "license": "MIT",
+  "private": true,
+  "dependencies": {
+    "aws-sdk": "^2.699.0",
+    "blockapps-rest": "^7.6.6",
+    "body-parser": "^1.19.0",
+    "chai": "^4.2.0",
+    "cookie-parser": "^1.4.5",
+    "cors": "^2.8.5",
+    "crypto": "^1.0.1",
+    "dotenv": "^8.2.0",
+    "express": "^4.17.1",
+    "express-winston": "^4.0.3",
+    "helmet": "^3.22.1",
+    "ip": "^1.1.5",
+    "jwt-decode": "^2.2.0",
+    "mocha": "^8.0.1",
+    "moment": "^2.26.0",
+    "multer": "^1.4.2",
+    "url": "^0.11.0",
+    "winston": "^3.2.1"
+  },
+  "devDependencies": {
+    "@babel/cli": "^7.10.1",
+    "@babel/core": "^7.10.2",
+    "@babel/node": "^7.10.1",
+    "@babel/preset-env": "^7.10.2",
+    "@babel/register": "^7.10.1",
+    "chai-http": "^4.3.0"
+  },
+  "scripts": {
+    "token-getter": "babel-node node_modules/blockapps-rest/dist/util/oauth.client.js --flow authorization-code --config config/${SERVER:-localhost}.config.yaml",
+    "start": "babel-node index",
+    "start:prod": "NODE_ENV=production babel-node index",
+    "deploy": "cp config/${SERVER:-localhost}.config.yaml ${CONFIG_DIR_PATH:-.}/config.yaml && mocha --require @babel/register dapp/dapp/dapp.deploy.js --config ${CONFIG_DIR_PATH:-.}/config.yaml",
+    "test:dapp": "SERVER=localhost mocha --require @babel/register dapp/dapp/test/dapp.test.js -b",
+    "test:e2e": "SERVER=localhost mocha --require @babel/register dapp/dapp/test/e2e.test.js -b",
+    "test:api": "SERVER=localhost mocha --require @babel/register test/v1/ -b",
+    "test:files": "SERVER=localhost mocha --require @babel/register dapp/files/test/ -b",
+    "test": "yarn test:dapp && yarn test:e2e && yarn test:files && yarn test:api"
+  }
+}

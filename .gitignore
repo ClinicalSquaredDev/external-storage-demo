@@ -1,0 +1,9 @@
+**/.DS_Store
+**/node_modules
+.vscode
+external-storage-demo-server/config/localhost.config.yaml
+external-storage-demo-server/config/docker.config.yaml
+external-storage-demo-server/config/csquared.config.yaml
+backend/config/localhost.config.yaml
+backend/config/docker.config.yaml
+backend/config/csquared.config.yaml
