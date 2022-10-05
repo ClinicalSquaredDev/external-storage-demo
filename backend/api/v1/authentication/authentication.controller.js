@@ -15,19 +15,19 @@ class AuthenticationController {
     const accessTokenExpiration = decodedToken["exp"];
 
     res.cookie(req.app.oauth.getCookieNameAccessToken(), accessToken, {
-      maxAge: config.nodes[0]["oauth"][1]["appTokenCookieMaxAge"],
+      maxAge: config.nodes[0]["oauth2"]["appTokenCookieMaxAge"],
       httpOnly: true
     });
     res.cookie(
       req.app.oauth.getCookieNameAccessTokenExpiry(),
       accessTokenExpiration,
       {
-        maxAge: config.nodes[0]["oauth"][1]["appTokenCookieMaxAge"],
+        maxAge: config.nodes[0]["oauth2"]["appTokenCookieMaxAge"],
         httpOnly: true
       }
     );
     res.cookie(req.app.oauth.getCookieNameRefreshToken(), refreshToken, {
-      maxAge: config.nodes[0]["oauth"][1]["appTokenCookieMaxAge"],
+      maxAge: config.nodes[0]["oauth2"]["appTokenCookieMaxAge"],
       httpOnly: true
     });
     res.redirect("/");

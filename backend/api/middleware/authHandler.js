@@ -32,7 +32,7 @@ class AuthHandler {
 
   static init(app) {
     try {
-      app.oauth = oauthUtil.init(config.nodes[0].oauth[1]);
+      app.oauth = oauthUtil.init(config.nodes[0].oauth2);
     } catch (err) {
       console.log(err);
       console.error("Error initializing oauth handlers");

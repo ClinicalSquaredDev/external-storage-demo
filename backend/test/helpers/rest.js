@@ -23,7 +23,7 @@ export const get = async (
       .get(getUrl(prefix, endpoint))
       .set(
         "Cookie",
-        `${config.nodes[0].oauth[1].appTokenCookieName}=${accessToken}`
+        `${config.nodes[0].oauth2.appTokenCookieName}=${accessToken}`
       );
     Object.keys(headers).forEach(header =>
       request.set(header, headers[header])
@@ -44,7 +44,7 @@ export const post = async (prefix, endpoint, body, accessToken = null) => {
         .post(getUrl(prefix, endpoint))
         .set(
           "Cookie",
-          `${config.nodes[0].oauth[1].appTokenCookieName}=${accessToken}`
+          `${config.nodes[0].oauth2.appTokenCookieName}=${accessToken}`
         )
         .send(body)
     : await chai
@@ -60,7 +60,7 @@ export const del = async (prefix, endpoint, body, accessToken = null) => {
         .delete(getUrl(prefix, endpoint))
         .set(
           "Cookie",
-          `${config.nodes[0].oauth[1].appTokenCookieName}=${accessToken}`
+          `${config.nodes[0].oauth2.appTokenCookieName}=${accessToken}`
         )
         .send(body)
     : await chai
@@ -85,7 +85,7 @@ export const postFile = async (
         .field("comments", comments)
         .set(
           "Cookie",
-          `${config.nodes[0].oauth[1].appTokenCookieName}=${accessToken}`
+          `${config.nodes[0].oauth2.appTokenCookieName}=${accessToken}`
         )
         .attach(
           constants.fileUploadFieldName,
@@ -120,7 +120,7 @@ export const downloadFile = async (prefix, endpoint, accessToken = null) => {
     .get(getUrl(prefix, endpoint))
     .set(
       "Cookie",
-      `${config.nodes[0].oauth[1].appTokenCookieName}=${accessToken}`
+      `${config.nodes[0].oauth2.appTokenCookieName}=${accessToken}`
     );
 
   return request.buffer().parse(binaryParser);

@@ -2,8 +2,8 @@ import { rest, oauthUtil } from "blockapps-rest";
 import jwtDecode from "jwt-decode";
 import config from "../load.config";
 
-const oauth = oauthUtil.init(config.nodes[0].oauth[0]);
-const oauth2 = oauthUtil.init(config.nodes[0].oauth[1]);
+const oauth = oauthUtil.init(config.nodes[0].oauth);
+const oauth2 = oauthUtil.init(config.nodes[0].oauth2);
 
 const CACHED_DATA = {
   serviceToken: null,
@@ -41,7 +41,7 @@ const getUsernameFromDecodedToken = decodedToken => {
   const {
     tokenUsernameProperty,
     tokenUsernamePropertyServiceFlow
-  } = config.nodes[0].oauth[1];
+  } = config.nodes[0].oauth2;
   let username;
   if (decodedToken[tokenUsernameProperty]) {
     username = decodedToken[tokenUsernameProperty];
@@ -65,52 +65,55 @@ const getCredentialsFromTokenEnv = envVariable => {
 };
 
 const getToken = async (flow) => {
-  try {
-    let token = flow === "service" ?
-      CACHED_DATA.serviceToken : CACHED_DATA.authToken;
-    const expiresAt = flow === "service" ?
-      CACHED_DATA.serviceTokenExpiresAt : CACHED_DATA.authTokenExpiresAt;
-    if (
-      !token ||
-      !expiresAt ||
-      expiresAt <=
-      Math.floor(Date.now() / 1000) + SERVICE_TOKEN_LIFETIME_RESERVE_SECONDS
-    ) {
-      let authtype;
-      let tokenObj;
+  let token = flow === "service" ?
+    CACHED_DATA.serviceToken : CACHED_DATA.authToken;
+  const expiresAt = flow === "service" ?
+    CACHED_DATA.serviceTokenExpiresAt : CACHED_DATA.authTokenExpiresAt;
+  if (
+    !token ||
+    !expiresAt ||
+    expiresAt <=
+    Math.floor(Date.now() / 1000) + SERVICE_TOKEN_LIFETIME_RESERVE_SECONDS
+  ) {
 
-      if (flow === "service") {
-        authtype = 0;
-        tokenObj = await oauth.getAccessTokenByClientSecret();
-      } else {
-        authtype = 1;
+    let tokenObj;
+
+    if (flow === "service") {
+      tokenObj = await oauth.getAccessTokenByClientSecret();
+      token =
+        tokenObj.token[
+        config.nodes[0].oauth.tokenField
+          ? config.nodes[0].oauth.tokenField
+          : "access_token"
+        ];
+    } else {
+      try {
         tokenObj = await oauth2.getAccessTokenByAuthCode();
-        // tokenObj = await oauth2.getAccessTokenByClientSecret();
+      } catch (e) {
+        console.log("\n------- Error -------");
+        console.log(e);
+        console.log("---------------------\n");
       }
       token =
         tokenObj.token[
-        config.nodes[0].oauth[authtype].tokenField
-          ? config.nodes[0].oauth[authtype].tokenField
+        config.nodes[0].oauth2.tokenField
+          ? config.nodes[0].oauth2.tokenField
           : "access_token"
         ];
-      if (flow === "service") {
-        CACHED_DATA.serviceToken = token;
-        CACHED_DATA.serviceTokenExpiresAt = Math.floor(
-          tokenObj.token.expires_at / 1000
-        );
-      } else {
-        CACHED_DATA.authToken = token;
-        CACHED_DATA.authTokenExpiresAt = Math.floor(
-          tokenObj.token.expires_at / 1000
-        );
-      }
     }
-    return token;
-  } catch(e) {
-    console.log("------- Error -------");
-    console.log(e);
-    console.log("---------------------");
-  };
+    if (flow === "service") {
+      CACHED_DATA.serviceToken = token;
+      CACHED_DATA.serviceTokenExpiresAt = Math.floor(
+        tokenObj.token.expires_at / 1000
+      );
+    } else {
+      CACHED_DATA.authToken = token;
+      CACHED_DATA.authTokenExpiresAt = Math.floor(
+        tokenObj.token.expires_at / 1000
+      );
+    }
+  }
+  return token;
 };
 
 export default {
